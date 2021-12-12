@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Credit Card Acceptance</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.0.1/css/bootstrap.min.css" integrity="sha512-Ez0cGzNzHR1tYAv56860NLspgUGuQw16GiOOp/I2LuTmpSK9xDXlgJz3XN4cnpXWDmkNBKXR/VDMTCnAaEooxA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" integrity="sha512-iBBXm8fW90+nuLcSKlbmrPcLa0OT92xO1BIsZ+ywDWZCvqsWgccV3gFoRBv0z+8dLJgyAHIhR35VZc2oM/gI1w==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <!-- data tables CDN css -->
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/bs4/dt-1.10.24/datatables.min.css"/>
+    <style>
+        div.dataTables_filter, div.dataTables_length {
+            padding-top: 6px;
+            padding-bottom: 6px;
+        }
+        .btn {
+            width: 200px;
+            margin: 0 auto;
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-6 mx-auto mt-4">
+                <div class="card shadow">
+                    <div class="card-header bg-primary">
+                        <h3 class="text-light text-center">Predict Credit Card Acceptance</h3>
+                    </div>
+                    
+                    <div class="card-body p-4">
+                        <div class="mb-4">
+                            <h5 class="text-center">Prediction Result:</h5>
+                            <h6 class="result text-center"></h6>
+                        </div>
+                        <form>
+                            <div class="mb-3">
+                                <label class="mb-2">Credit Rating</label>
+                                <select class="form-select" aria-label="Default select example" id="credit-rating">
+                                    <option value="Low">Low</option>
+                                    <option value="Medium">Medium</option>
+                                    <option value="High">High</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label class="mb-2">Mailer Type</label>
+                                <select class="form-select" aria-label="Default select example" id="mailer-type">
+                                    <option value="Letter">Letter</option>
+                                    <option value="Postcard">Postcard</option>
+                                </select>
+                            </div>
+                            <div class="mb-3" >
+                                <label class="mb-2">Reward</label>
+                                <select class="form-select" aria-label="Default select example" id="reward">
+                                    <option value="Air Miles">Air Miles</option>
+                                    <option value="Cash Back">Cash Back</option>
+                                    <option value="Points">Points</option>
+                                </select>
+                            </div>
+                            <div class="mb-3" >
+                                <label class="mb-2">Income Level</label>
+                                <select class="form-select" aria-label="Default select example" id="income-level">
+                                    <option value="Low">Low</option>
+                                    <option value="Medium">Medium</option>
+                                    <option value="High">High</option>
+                                </select>
+                            </div>
+                            <button class="btn btn-primary btn-md align-items-center">Predict</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const form = document.querySelector('form')
+        const result = document.querySelector('.result')
+        
+        form.addEventListener('submit', async(e) => {
+            e.preventDefault()
+
+            result.textContent = ''
+
+            const credit_rating = document.getElementById('credit-rating').value
+            const mailer_type = document.getElementById('mailer-type').value
+            const reward = document.getElementById('reward').value
+            const income_level = document.getElementById('income-level').value
+            
+            try {
+                const res = await fetch('https://credit-card-acceptance-mcai.herokuapp.com/predict', {
+                    method: 'POST',
+                    body: JSON.stringify({credit_rating: credit_rating, mailer_type: mailer_type, reward : reward, income_level : income_level}),
+                    headers: {'Content-Type': 'application/json'}
+                })
+
+                const prediction = await res.json()
+                result.textContent = prediction["prediction"]
+            } catch (error) {
+                console.log(error)
+            }
+        })
+    </script>
+</body>
+</html>
